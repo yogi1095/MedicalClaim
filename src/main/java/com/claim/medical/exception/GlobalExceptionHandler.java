@@ -11,6 +11,14 @@ import com.claim.medical.dto.ErrorDto;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<ErrorDto> UserNotFoundException(UserNotFoundException exception) {
+		ErrorDto errorDto = new ErrorDto();
+		errorDto.setMessage(Constant.USER_NOT_FOUND);
+		errorDto.setStatusCode(HttpStatus.NOT_FOUND.value());
+		return new ResponseEntity<>(errorDto, HttpStatus.NOT_FOUND);
+	}
+
 	@ExceptionHandler(InvalidClaimAmountException.class)
 	public ResponseEntity<ErrorDto> invalidClaimAmountException() {
 		ErrorDto errorDto = new ErrorDto();

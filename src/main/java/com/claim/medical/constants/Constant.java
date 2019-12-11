@@ -6,6 +6,8 @@ public class Constant {
 
 	}
 
+	public static final String USER_NOT_FOUND = "User Not Found";
+
 	public static final String POLICY_HOLDER_NOT_FOUND = "Policyholder Not Found";
 	public static final String POLICY_EXPIRED = "claim is Not covered under policy";
 	public static final String CLAIM_RAISED = "Claim Raised Successfully";
