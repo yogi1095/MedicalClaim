@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.claim.medical.entity.PolicyHolder;
 @Repository
-public interface PolicyRepository extends JpaRepository<PolicyHolder, Long>{
+public interface PolicyHolderRepository extends JpaRepository<PolicyHolder, Long>{
 
 	PolicyHolder findByPolicyHolderId(Long claimId);
 

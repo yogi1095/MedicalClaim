@@ -1,5 +1,6 @@
 package com.claim.medical.repository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +10,8 @@ import com.claim.medical.entity.Claim;
 
 @Repository
 public interface ClaimRepository extends JpaRepository<Claim, Long> {
+	
+	Optional<Claim> findByAdmittedDate(LocalDate admittedDate);
 
 	Optional<Claim> findByClaimId(Long claimId);
 
