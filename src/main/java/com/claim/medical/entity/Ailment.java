@@ -13,6 +13,6 @@ public class Ailment {
 	
 	@Id
 	private Integer ailmentId;
-	private String aikmentType;
+	private String ailmentType;
 
 }
