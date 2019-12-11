@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.claim.medical.controller.HospitalController;
 import com.claim.medical.entity.Ailment;
 import com.claim.medical.repository.AilmentRepository;
 
@@ -23,7 +22,7 @@ public class AilmentServiceImpl implements AilmentService {
 	@Autowired
 	AilmentRepository ailmentRepository;
 	
-	private static final Logger logger = LoggerFactory.getLogger(HospitalController.class);
+	private static final Logger logger = LoggerFactory.getLogger(AilmentServiceImpl.class);
 
 	/**
 	 * This method is used to fetch all aliments.

@@ -20,6 +20,7 @@
 		<sonar.coverage.exclusions>
 			**/dto/*,
 			**/entity/*,
+			**/MedicalClaimApplication.java*,
 			**/config/*,
 			**/GlobalExceptionHandler.java*
 		</sonar.coverage.exclusions>

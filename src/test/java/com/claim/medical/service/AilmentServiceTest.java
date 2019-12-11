@@ -1,4 +1,4 @@
-package com.claim.medical.controller;
+package com.claim.medical.service;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -11,23 +11,20 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.claim.medical.service.AilmentService;
+import com.claim.medical.repository.AilmentRepository;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
-public class AilmentControllerTest {
+public class AilmentServiceTest {
+	
 	@Mock
-	 AilmentService ailmentService;
+	 AilmentRepository ailmentRepository;
 	@InjectMocks
-	AilmentController ailmentController;
+	AilmentServiceImpl ailmentServiceImpl;
 	
 	@Test
 	public void testGetAilments() {
-		Mockito.when(ailmentService.getAilments()).thenReturn(new ArrayList<>());
-		assertNotNull(ailmentController.getAilments());
-		
+		Mockito.when(ailmentRepository.findAll()).thenReturn(new ArrayList<>());
+		assertNotNull(ailmentServiceImpl.getAilments());
 	}
-	
-	
-	
 
 }

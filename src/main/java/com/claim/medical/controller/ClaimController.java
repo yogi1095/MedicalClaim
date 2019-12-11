@@ -1,18 +1,23 @@
 package com.claim.medical.controller;
 
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.claim.medical.dto.ApproveClaimRequestDto;
 import com.claim.medical.dto.ClaimRequestDto;
 import com.claim.medical.entity.Claim;
 import com.claim.medical.exception.AlreadyClaimedException;
@@ -20,6 +25,7 @@ import com.claim.medical.exception.InvalidClaimAmountException;
 import com.claim.medical.exception.PolicyExpiredException;
 import com.claim.medical.exception.PolicyHolderNotFoundException;
 import com.claim.medical.exception.PolicyNotFoundException;
+import com.claim.medical.exception.UserNotFoundException;
 import com.claim.medical.service.ClaimService;
 
 /**
@@ -37,6 +43,8 @@ import com.claim.medical.service.ClaimService;
 public class ClaimController {
 	@Autowired
 	ClaimService claimService;
+	
+	private static final Logger logger = LoggerFactory.getLogger(ClaimController.class);
 
 
 	/**
@@ -49,8 +57,6 @@ public class ClaimController {
 	public ResponseEntity<Claim> claimDetails(@RequestParam("claimId") Long claimId) throws PolicyNotFoundException {
 		return ResponseEntity.ok().body(claimService.viewClaimDetails(claimId));
 	}
-
-	private static final Logger logger = LoggerFactory.getLogger(ClaimController.class);
 
 	/**
 	 * 
@@ -69,6 +75,16 @@ public class ClaimController {
 		logger.info("raising claim");
 		return ResponseEntity.ok().body(claimService.raiseRequest(claimRequestDto));
 
+	}
+	
+	@GetMapping("/request/{userId}")
+	public ResponseEntity<List<Claim>> getClaims(@PathVariable Integer userId) throws UserNotFoundException{
+		return ResponseEntity.ok().body(claimService.getClaims(userId));
+	}
+	
+	@PutMapping
+	public String approverClaimResponse(@RequestBody ApproveClaimRequestDto approveClaimRequestDto) {
+		return claimService.approverClaimResponse(approveClaimRequestDto);
 	}
 
 }

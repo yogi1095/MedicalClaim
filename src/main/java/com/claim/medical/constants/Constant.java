@@ -27,5 +27,11 @@ public class Constant {
 	public static final Integer POLICY_NOT_FOUND_STATUS = 523;
 	public static final Integer ALREADY_CLAIMED_STATUS = 524;
 	public static final Integer ZERO_AMOUNT = 0;
+	public static final Integer MAX_LEVEL_1APPROVE_AMOUNT = 10000;
+	public static final Integer LEVEL_ONE_APPROVER = 1;
+	public static final Integer LEVEL_TWO_APPROVER = 2;
+	public static final Integer APPROVE = 1;
+	public static final Integer DENY = 2;
+	public static final Integer REFER_BACK = 3;
 
 }
