@@ -99,9 +99,4 @@ public class UserServiceTest {
 		List<Claim> claimList1 = userServiceImpl.userLogin(loginRequestDto);
 		assertNotNull(claimlist);
 	}
-
-	// Mockito.when(claimRepository.findAllByClaimStatus("pending at level
-	// 2")).thenReturn(claimlist);
-	// Mockito.when(claimRepository.findAllByClaimStatus("pending at level
-	// 1")).thenReturn(claimlist);
 }
