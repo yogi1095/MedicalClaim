@@ -11,9 +11,10 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Policy {
+public class PolicyHolder {
 	
 	@Id
+	private Long policyHolderId;
 	private Long policyNumber;
 	private LocalDate startDate;
 	private LocalDate endDate;
