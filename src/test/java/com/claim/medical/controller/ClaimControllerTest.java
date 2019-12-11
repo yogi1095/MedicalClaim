@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.claim.medical.dto.ClaimRequestDto;
 import com.claim.medical.entity.Claim;
+import com.claim.medical.exception.AlreadyClaimedException;
 import com.claim.medical.exception.InvalidClaimAmountException;
 import com.claim.medical.exception.PolicyExpiredException;
 import com.claim.medical.exception.PolicyHolderNotFoundException;
@@ -34,7 +37,7 @@ public class ClaimControllerTest {
 
 	@Test
 	public void raiseClaim() throws PolicyHolderNotFoundException, PolicyExpiredException, InvalidClaimAmountException,
-			PolicyNotFoundException {
+			PolicyNotFoundException, AlreadyClaimedException {
 		claimRequestDto = new ClaimRequestDto();
 		claimRequestDto.setAdmittedDate(LocalDate.of(2019, 12, 01));
 		claimRequestDto.setAilmentType("maternity");
@@ -53,6 +56,35 @@ public class ClaimControllerTest {
 		Mockito.when(claimService.raiseRequest(claimRequestDto)).thenReturn(12345L);
 		ResponseEntity<Long> actual = claimController.raiseClaim(claimRequestDto);
 		assertEquals(HttpStatus.OK, actual.getStatusCode());
+	}
+
+	private static final Claim Claim = null;
+
+	@Before
+	public void setup() {
+		Claim claim = new Claim();
+		claim.setAdmittedDate(LocalDate.parse("2019-09-09"));
+		claim.setAilmentType("ddd");
+		claim.setApproverComments("ddd");
+		claim.setClaimAmount(500.00);
+		claim.setClaimDate(LocalDate.parse("2019-07-05"));
+		claim.setClaimStatus("Approved");
+		claim.setDiagnosis("cancer");
+		claim.setDischargeDate(LocalDate.parse("2019-08-02"));
+		claim.setDischargeSummary("done");
+		claim.setDoctorFee(200.00);
+		claim.setHospitalName("moorthy hospital");
+		claim.setMedicalFee(300.00);
+		claim.setName("zzz");
+
+	}
+
+	@Test
+	public void testClaimDetails() throws PolicyNotFoundException {
+		Long claimId = 8888L;
+		Mockito.when(claimService.viewClaimDetails(claimId)).thenReturn(Claim);
+		ResponseEntity<Claim> response = claimController.claimDetails(claimId);
+		Assert.assertNotNull(response);
 	}
 
 }

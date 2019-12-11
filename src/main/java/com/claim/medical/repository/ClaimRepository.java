@@ -10,7 +10,9 @@ import com.claim.medical.entity.Claim;
 
 @Repository
 public interface ClaimRepository extends JpaRepository<Claim, Long> {
-	
+
 	Optional<Claim> findByAdmittedDate(LocalDate admittedDate);
+
+	Optional<Claim> findByClaimId(Long claimId);
 
 }

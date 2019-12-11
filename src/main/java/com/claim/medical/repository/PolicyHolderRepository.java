@@ -7,4 +7,6 @@ import com.claim.medical.entity.PolicyHolder;
 @Repository
 public interface PolicyHolderRepository extends JpaRepository<PolicyHolder, Long>{
 
+	PolicyHolder findByPolicyHolderId(Long claimId);
+
 }

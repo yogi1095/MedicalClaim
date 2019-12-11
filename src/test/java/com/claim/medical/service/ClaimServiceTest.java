@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -16,6 +17,7 @@ import com.claim.medical.constants.Constant;
 import com.claim.medical.dto.ClaimRequestDto;
 import com.claim.medical.entity.Claim;
 import com.claim.medical.entity.PolicyHolder;
+import com.claim.medical.exception.AlreadyClaimedException;
 import com.claim.medical.exception.InvalidClaimAmountException;
 import com.claim.medical.exception.PolicyExpiredException;
 import com.claim.medical.exception.PolicyHolderNotFoundException;
@@ -25,6 +27,8 @@ import com.claim.medical.repository.PolicyHolderRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimServiceTest {
+	
+	private static final Optional<Claim> Claim = null;
 
 	@InjectMocks
 	ClaimServiceImpl claimServiceImpl;
@@ -41,7 +45,7 @@ public class ClaimServiceTest {
 
 	@Test
 	public void raiseClaimTestPositive() throws PolicyHolderNotFoundException, PolicyExpiredException,
-			InvalidClaimAmountException, PolicyNotFoundException {
+			InvalidClaimAmountException, PolicyNotFoundException, AlreadyClaimedException {
 		claimRequestDto = new ClaimRequestDto();
 		claimRequestDto.setAdmittedDate(LocalDate.of(2019, 12, 01));
 		claimRequestDto.setAilmentType("maternity");
@@ -86,7 +90,7 @@ public class ClaimServiceTest {
 
 	@Test(expected = PolicyHolderNotFoundException.class)
 	public void raiseClaimTestPolicyHolderNotFound() throws PolicyHolderNotFoundException, PolicyExpiredException,
-			InvalidClaimAmountException, PolicyNotFoundException {
+			InvalidClaimAmountException, PolicyNotFoundException, AlreadyClaimedException {
 		claimRequestDto = new ClaimRequestDto();
 		claimRequestDto.setAdmittedDate(LocalDate.of(2019, 12, 01));
 		claimRequestDto.setAilmentType("maternity");
@@ -113,7 +117,7 @@ public class ClaimServiceTest {
 
 	@Test(expected = PolicyNotFoundException.class)
 	public void raiseClaimTestPolicyNotFound() throws PolicyHolderNotFoundException, PolicyExpiredException,
-			InvalidClaimAmountException, PolicyNotFoundException {
+			InvalidClaimAmountException, PolicyNotFoundException, AlreadyClaimedException {
 		claimRequestDto = new ClaimRequestDto();
 		claimRequestDto.setAdmittedDate(LocalDate.of(2019, 12, 01));
 		claimRequestDto.setAilmentType("maternity");
@@ -140,7 +144,7 @@ public class ClaimServiceTest {
 
 	@Test(expected = InvalidClaimAmountException.class)
 	public void raiseClaimTestInvalidClaimAmount() throws PolicyHolderNotFoundException, PolicyExpiredException,
-			InvalidClaimAmountException, PolicyNotFoundException {
+			InvalidClaimAmountException, PolicyNotFoundException, AlreadyClaimedException {
 		claimRequestDto = new ClaimRequestDto();
 		claimRequestDto.setAdmittedDate(LocalDate.of(2019, 12, 01));
 		claimRequestDto.setAilmentType("maternity");
@@ -167,7 +171,7 @@ public class ClaimServiceTest {
 
 	@Test(expected = PolicyExpiredException.class)
 	public void raiseClaimTestAlreadyClaimed() throws PolicyHolderNotFoundException, PolicyExpiredException,
-			InvalidClaimAmountException, PolicyNotFoundException {
+			InvalidClaimAmountException, PolicyNotFoundException, AlreadyClaimedException {
 		claimRequestDto = new ClaimRequestDto();
 		claimRequestDto.setAdmittedDate(LocalDate.of(2019, 12, 01));
 		claimRequestDto.setAilmentType("maternity");
@@ -192,4 +196,25 @@ public class ClaimServiceTest {
 		claimServiceImpl.raiseRequest(claimRequestDto);
 	}
 
-}
+	@Before
+	public void setup() {
+		Claim claim=new Claim();
+		claim.setAdmittedDate(LocalDate.parse("2019-09-09"));
+		claim.setAilmentType("ddd");
+		claim.setApproverComments("ddd");
+		claim.setClaimAmount(500.00);
+		claim.setClaimDate(LocalDate.parse("2019-07-05"));
+		claim.setClaimStatus("Approved");
+		claim.setDiagnosis("cancer");
+		claim.setDischargeDate(LocalDate.parse("2019-08-02"));
+		claim.setDischargeSummary("done");
+		claim.setDoctorFee(200.00);
+		claim.setHospitalName("moorthy hospital");
+		claim.setMedicalFee(300.00);
+		claim.setName("zzz");
+		
+	}
+	
+	}
+
+
