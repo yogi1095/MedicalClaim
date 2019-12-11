@@ -17,5 +17,6 @@ public class Constant {
     public static final String CLAIM_PENDING_STAGE_1 ="pending at level 1";
     public static final String CLAIM_PENDING_STAGE_2 ="pending at level 2";
     public static final String POLICY_NOT_FOUND ="Policy Not Found";
+    public static final String USER_NOT_FOUND ="User Not Found";
 
 }
