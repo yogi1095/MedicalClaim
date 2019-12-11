@@ -26,8 +26,9 @@ public class Claim {
 	private LocalDate claimDate;
 	private String name;
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "policyNumber")
+	@JoinColumn(name = "policyHolderId")
 	private PolicyHolder policyHolder;
+	private Long policyNumber;
 	private String diagnosis;
 	private LocalDate admittedDate;
 	private LocalDate dischargeDate;
