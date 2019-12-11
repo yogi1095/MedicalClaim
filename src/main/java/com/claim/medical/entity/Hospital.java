@@ -14,5 +14,6 @@ public class Hospital {
 	@Id
 	private Integer hospitalId;
 	private String hospitalName;
+	 
 
 }
