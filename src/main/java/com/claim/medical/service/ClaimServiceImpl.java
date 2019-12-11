@@ -39,7 +39,9 @@ public class ClaimServiceImpl implements ClaimService {
 			throw new PolicyNotFoundException(Constant.POLICY_NOT_FOUND);
 		} else if (!claimRequestDto.getAdmittedDate().isAfter(policyHolder.get().getStartDate())) {
 			throw new PolicyExpiredException(Constant.POLICY_EXPIRED);
-		} else if (claimRequestDto.getClaimAmount() <= 0) {
+		} else if (claimRequestDto.getClaimAmount() <= Constant.ZERO_AMOUNT) {
+			throw new InvalidClaimAmountException(Constant.CLAIM_AMOUNT_INVALID);
+		} else if (claimRepository.findByAdmittedDate(claimRequestDto.getAdmittedDate()).isPresent()) {
 			throw new InvalidClaimAmountException(Constant.CLAIM_AMOUNT_INVALID);
 		} else {
 			claim.setPolicyHolder(policyHolder.get());
@@ -55,6 +57,7 @@ public class ClaimServiceImpl implements ClaimService {
 			claim.setAdmittedDate(claimRequestDto.getAdmittedDate());
 			claim.setDischargeDate(claimRequestDto.getDischargeDate());
 			claim.setClaimAmount(claimRequestDto.getClaimAmount());
+			claim.setPolicyNumber(claimRequestDto.getPolicyNumber());
 			claimRepository.save(claim);
 			return claim.getClaimId();
 		}

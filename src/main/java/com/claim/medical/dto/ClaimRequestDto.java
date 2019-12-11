@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ClaimRequestDto {
-    private String name;
+	private String name;
 	private Long policyHolderId;
 	private Long policyNumber;
 	private String diagnosis;

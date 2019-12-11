@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Ailment {
-	
+
 	@Id
 	private Integer ailmentId;
 	private String ailmentType;
