@@ -27,8 +27,6 @@ import com.claim.medical.repository.PolicyHolderRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimServiceTest {
-	
-	private static final Optional<Claim> Claim = null;
 
 	@InjectMocks
 	ClaimServiceImpl claimServiceImpl;
@@ -198,7 +196,7 @@ public class ClaimServiceTest {
 
 	@Before
 	public void setup() {
-		Claim claim=new Claim();
+		Claim claim = new Claim();
 		claim.setAdmittedDate(LocalDate.parse("2019-09-09"));
 		claim.setAilmentType("ddd");
 		claim.setApproverComments("ddd");
@@ -215,6 +213,4 @@ public class ClaimServiceTest {
 		
 	}
 	
-	}
-
-
+}

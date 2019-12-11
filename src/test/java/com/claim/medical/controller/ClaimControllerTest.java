@@ -1,8 +1,11 @@
 package com.claim.medical.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,6 +25,7 @@ import com.claim.medical.exception.InvalidClaimAmountException;
 import com.claim.medical.exception.PolicyExpiredException;
 import com.claim.medical.exception.PolicyHolderNotFoundException;
 import com.claim.medical.exception.PolicyNotFoundException;
+import com.claim.medical.exception.UserNotFoundException;
 import com.claim.medical.service.ClaimService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -32,7 +36,6 @@ public class ClaimControllerTest {
 
 	@Mock
 	ClaimService claimService;
-
 	ClaimRequestDto claimRequestDto = null;
 
 	@Test
@@ -60,8 +63,11 @@ public class ClaimControllerTest {
 
 	private static final Claim Claim = null;
 
+	List<Claim> claimList = null;
+
 	@Before
 	public void setup() {
+		claimList = new ArrayList<Claim>();
 		Claim claim = new Claim();
 		claim.setAdmittedDate(LocalDate.parse("2019-09-09"));
 		claim.setAilmentType("ddd");
@@ -76,15 +82,18 @@ public class ClaimControllerTest {
 		claim.setHospitalName("moorthy hospital");
 		claim.setMedicalFee(300.00);
 		claim.setName("zzz");
+		claimList.add(claim);
 
 	}
 
+
 	@Test
-	public void testClaimDetails() throws PolicyNotFoundException {
-		Long claimId = 8888L;
-		Mockito.when(claimService.viewClaimDetails(claimId)).thenReturn(Claim);
-		ResponseEntity<Claim> response = claimController.claimDetails(claimId);
-		Assert.assertNotNull(response);
+	public void testGetClaims() throws UserNotFoundException {
+
+		Mockito.when(claimService.getClaims(1)).thenReturn(claimList);
+		ResponseEntity<List<Claim>> claimslist = claimController.getClaims(1);
+		assertNotNull(claimslist);
+
 	}
 
 }

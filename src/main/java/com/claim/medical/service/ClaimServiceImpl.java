@@ -1,7 +1,7 @@
 package com.claim.medical.service;
 
-
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,31 +18,26 @@ import com.claim.medical.exception.InvalidClaimAmountException;
 import com.claim.medical.exception.PolicyExpiredException;
 import com.claim.medical.exception.PolicyHolderNotFoundException;
 import com.claim.medical.exception.PolicyNotFoundException;
+import com.claim.medical.exception.UserNotFoundException;
 import com.claim.medical.repository.ClaimRepository;
 import com.claim.medical.repository.PolicyHolderRepository;
 import com.claim.medical.repository.UserRepository;
-	
 
 @Service
 public class ClaimServiceImpl implements ClaimService {
 	@Autowired
 	ClaimRepository claimRepository;
-	
-
-
 
 	@Override
 	public Claim viewClaimDetails(Long claimId) throws PolicyNotFoundException {
-		
-		Optional<Claim> claim=claimRepository.findByClaimId(claimId);
-		if(claim.isPresent()) {
+
+		Optional<Claim> claim = claimRepository.findByClaimId(claimId);
+		if (claim.isPresent()) {
 			return claim.get();
-			}else {
-				throw new PolicyNotFoundException(Constant.POLICY_NOT_FOUND);
+		} else {
+			throw new PolicyNotFoundException(Constant.POLICY_NOT_FOUND);
 		}
 	}
-
-	
 
 	@Autowired
 	PolicyHolderRepository policyHolderRepository;
@@ -56,7 +51,6 @@ public class ClaimServiceImpl implements ClaimService {
 
 		Claim claim = new Claim();
 		Optional<PolicyHolder> policyHolder = policyHolderRepository.findById(claimRequestDto.getPolicyHolderId());
-		System.out.println(claimRequestDto.getClaimAmount());
 		if (!policyHolder.isPresent()) {
 			throw new PolicyHolderNotFoundException(Constant.POLICY_HOLDER_NOT_FOUND);
 		} else if (!policyHolder.get().getPolicyNumber().equals(claimRequestDto.getPolicyNumber())) {
@@ -93,9 +87,9 @@ public class ClaimServiceImpl implements ClaimService {
 		Optional<User> user = userRepository.findByUserName(approveClaimRequestDto.getUserName());
 		Optional<Claim> claim = claimRepository.findById(approveClaimRequestDto.getClaimId());
 		if (user.isPresent() && claim.isPresent()) {
-			if (approveClaimRequestDto.getApproveStatus() == 1) {
-				if (user.get().getRole().getRoleId() == 1) {
-					if (claim.get().getClaimAmount() > 50000) {
+			if (approveClaimRequestDto.getApproveStatus().equals(Constant.APPROVE)) {
+				if (user.get().getRole().getRoleId().equals(Constant.LEVEL_ONE_APPROVER)) {
+					if (claim.get().getClaimAmount() > Constant.MAX_LEVEL_1APPROVE_AMOUNT) {
 						claim.get().setClaimStatus(Constant.CLAIM_PENDING_STAGE_2);
 						claim.get().setApproverComments(approveClaimRequestDto.getApproverComment());
 						claimRepository.save(claim.get());
@@ -113,7 +107,7 @@ public class ClaimServiceImpl implements ClaimService {
 					return Constant.SUCCESS;
 				}
 
-			} else if (approveClaimRequestDto.getApproveStatus() == 2) {
+			} else if (approveClaimRequestDto.getApproveStatus().equals(Constant.DENY)) {
 				claim.get().setClaimStatus(Constant.CLAIM_DENY);
 				claim.get().setApproverComments(approveClaimRequestDto.getApproverComment());
 				claimRepository.save(claim.get());
@@ -132,15 +126,22 @@ public class ClaimServiceImpl implements ClaimService {
 
 	}
 
+	@Override
+	public List<Claim> getClaims(Integer userId) throws UserNotFoundException {
+		Optional<User> user = userRepository.findById(userId);
+		List<Claim> claims = null;
+		if (user.isPresent()) {
+			if (user.get().getRole().getRoleId().equals(Constant.LEVEL_ONE_APPROVER)) {
+				claims = claimRepository.findAllByClaimStatus(Constant.CLAIM_PENDING_STAGE_1);
+				return claims;
+
+			} else {
+				claims = claimRepository.findAllByClaimStatus(Constant.CLAIM_PENDING_STAGE_2);
+				return claims;
+			}
+		}else {
+			throw new UserNotFoundException(Constant.USER_NOT_FOUND);
+		}
+	}
 
 }
-		
-			
-			
-			
-			
-	
-
-
-
-	

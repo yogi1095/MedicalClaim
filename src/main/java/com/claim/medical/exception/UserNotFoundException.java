@@ -1,6 +1,6 @@
 package com.claim.medical.exception;
 
-public class UserNotFoundException extends RuntimeException {
+public class UserNotFoundException extends Exception {
 	/**
 	 * default serialVersionUID
 	 */

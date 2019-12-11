@@ -1,4 +1,4 @@
-package com.medical.service;
+package com.claim.medical.service;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -19,8 +19,10 @@ import com.claim.medical.dto.LoginRequestDto;
 import com.claim.medical.entity.Claim;
 import com.claim.medical.entity.Role;
 import com.claim.medical.entity.User;
+import com.claim.medical.exception.UserNotFoundException;
 import com.claim.medical.repository.ClaimRepository;
 import com.claim.medical.repository.UserRepository;
+import com.claim.medical.service.ClaimServiceImpl;
 import com.claim.medical.service.UserServiceImpl;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
@@ -33,9 +35,11 @@ public class UserServiceTest {
 
 	@InjectMocks
 	private UserServiceImpl userServiceImpl;
+	@InjectMocks
+	private ClaimServiceImpl claimServiceImpl;
 
 	LoginRequestDto loginRequestDto = null;
-	User user = null;
+	User users = null;
 	Claim claim = null;
 	Role role = null;
 	List<Claim> claimlist = new ArrayList<Claim>();
@@ -45,9 +49,9 @@ public class UserServiceTest {
 		loginRequestDto = new LoginRequestDto();
 		loginRequestDto.setUserName("yoga");
 		loginRequestDto.setPassword("india");
-		user = new User();
-		user.setUserName("yoga");
-		user.setPassword("india");
+		users = new User();
+		users.setUserName("yoga");
+		users.setPassword("india");
 		claim = new Claim();
 		claim.setAilmentType("fever");
 		claim.setApproverComments("approved");
@@ -68,35 +72,24 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void userLoginTest() {
+	public void userLoginTest() throws UserNotFoundException {
 		role = new Role();
 		role.setRoleId(1);
-		user.setRole(role);
+		users.setRole(role);
 		Mockito.when(userRepository.findByUserNameAndPassword(Mockito.anyString(), Mockito.anyString()))
-				.thenReturn(Optional.of(user));
-		List<Claim> claimList1 = userServiceImpl.userLogin(loginRequestDto);
-		assertNotNull(claimlist);
+				.thenReturn(Optional.of(users));
+		User user = userServiceImpl.userLogin(loginRequestDto);
+		assertNotNull(user);
 	}
 
 	@Test
-	public void userLoginTest2() {
+	public void testgetclaim() throws UserNotFoundException {
 		role = new Role();
 		role.setRoleId(2);
-		user.setRole(role);
-		Mockito.when(userRepository.findByUserNameAndPassword(Mockito.anyString(), Mockito.anyString()))
-				.thenReturn(Optional.of(user));
-		List<Claim> claimList1 = userServiceImpl.userLogin(loginRequestDto);
+		users.setRole(role);
+		Mockito.when(userRepository.findById(1)).thenReturn(Optional.of(users));
+		List<Claim> claimlist = claimServiceImpl.getClaims(1);
 		assertNotNull(claimlist);
 	}
 
-	@Test
-	public void userLoginNegativeTest() {
-		role = new Role();
-		role.setRoleId(3);
-		user.setRole(role);
-		Mockito.when(userRepository.findByUserNameAndPassword(Mockito.anyString(), Mockito.anyString()))
-				.thenReturn(Optional.of(user));
-		List<Claim> claimList1 = userServiceImpl.userLogin(loginRequestDto);
-		assertNotNull(claimlist);
-	}
 }
