@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.claim.medical.dto.ClaimRequestDto;
+import com.claim.medical.exception.AlreadyClaimedException;
 import com.claim.medical.exception.InvalidClaimAmountException;
 import com.claim.medical.exception.PolicyExpiredException;
 import com.claim.medical.exception.PolicyHolderNotFoundException;
@@ -42,11 +43,12 @@ public class ClaimController {
 	 * @throws PolicyExpiredException This exception occurs when policy gets expired while raising the claim
 	 * @throws InvalidClaimAmountException This exception arises when policy amount is exceeding the limit
 	 * @throws PolicyNotFoundException This exception arises when policy is not found while claimimg request
+	 * @throws AlreadyClaimedException 
 	 */
 	@PostMapping
 	public ResponseEntity<Long> raiseClaim(@RequestBody ClaimRequestDto claimRequestDto)
 			throws PolicyHolderNotFoundException, PolicyExpiredException, InvalidClaimAmountException,
-			PolicyNotFoundException {
+			PolicyNotFoundException, AlreadyClaimedException {
 		logger.info("raising claim");
 		return ResponseEntity.ok().body(claimService.raiseRequest(claimRequestDto));
 
