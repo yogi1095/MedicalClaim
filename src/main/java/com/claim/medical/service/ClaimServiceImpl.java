@@ -7,15 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.claim.medical.constants.Constant;
+import com.claim.medical.dto.ApproveClaimRequestDto;
 import com.claim.medical.dto.ClaimRequestDto;
 import com.claim.medical.entity.Claim;
 import com.claim.medical.entity.PolicyHolder;
+import com.claim.medical.entity.User;
+import com.claim.medical.exception.AlreadyClaimedException;
 import com.claim.medical.exception.InvalidClaimAmountException;
 import com.claim.medical.exception.PolicyExpiredException;
 import com.claim.medical.exception.PolicyHolderNotFoundException;
 import com.claim.medical.exception.PolicyNotFoundException;
 import com.claim.medical.repository.ClaimRepository;
 import com.claim.medical.repository.PolicyHolderRepository;
+import com.claim.medical.repository.UserRepository;
 
 @Service
 public class ClaimServiceImpl implements ClaimService {
@@ -26,21 +30,27 @@ public class ClaimServiceImpl implements ClaimService {
 	@Autowired
 	PolicyHolderRepository policyHolderRepository;
 
+	@Autowired
+	UserRepository userRepository;
+
 	@Override
 	public Long raiseRequest(ClaimRequestDto claimRequestDto) throws PolicyHolderNotFoundException,
-			PolicyExpiredException, InvalidClaimAmountException, PolicyNotFoundException {
+			PolicyExpiredException, InvalidClaimAmountException, PolicyNotFoundException, AlreadyClaimedException {
 
 		Claim claim = new Claim();
 		Optional<PolicyHolder> policyHolder = policyHolderRepository.findById(claimRequestDto.getPolicyHolderId());
-
+		System.out.println(claimRequestDto.getClaimAmount());
 		if (!policyHolder.isPresent()) {
 			throw new PolicyHolderNotFoundException(Constant.POLICY_HOLDER_NOT_FOUND);
-		} else if (policyHolder.get().getPolicyNumber() != claimRequestDto.getPolicyNumber()) {
+		} else if (!policyHolder.get().getPolicyNumber().equals(claimRequestDto.getPolicyNumber())) {
 			throw new PolicyNotFoundException(Constant.POLICY_NOT_FOUND);
-		} else if (!claimRequestDto.getAdmittedDate().isAfter(policyHolder.get().getStartDate())) {
+		} else if (!(claimRequestDto.getAdmittedDate().isAfter(policyHolder.get().getStartDate())
+				&& claimRequestDto.getAdmittedDate().isBefore(policyHolder.get().getEndDate()))) {
 			throw new PolicyExpiredException(Constant.POLICY_EXPIRED);
-		} else if (claimRequestDto.getClaimAmount() <= 0) {
+		} else if (claimRequestDto.getClaimAmount() <= Constant.ZERO_AMOUNT) {
 			throw new InvalidClaimAmountException(Constant.CLAIM_AMOUNT_INVALID);
+		} else if (claimRepository.findByAdmittedDate(claimRequestDto.getAdmittedDate()).isPresent()) {
+			throw new AlreadyClaimedException(Constant.ALREADY_CLAIMED);
 		} else {
 			claim.setPolicyHolder(policyHolder.get());
 			claim.setName(claimRequestDto.getName());
@@ -55,9 +65,54 @@ public class ClaimServiceImpl implements ClaimService {
 			claim.setAdmittedDate(claimRequestDto.getAdmittedDate());
 			claim.setDischargeDate(claimRequestDto.getDischargeDate());
 			claim.setClaimAmount(claimRequestDto.getClaimAmount());
+			claim.setPolicyNumber(claimRequestDto.getPolicyNumber());
 			claimRepository.save(claim);
 			return claim.getClaimId();
 		}
+	}
+
+	@Override
+	public String approverClaimResponse(ApproveClaimRequestDto approveClaimRequestDto) {
+		Optional<User> user = userRepository.findByUserName(approveClaimRequestDto.getUserName());
+		Optional<Claim> claim = claimRepository.findById(approveClaimRequestDto.getClaimId());
+		if (user.isPresent() && claim.isPresent()) {
+			if (approveClaimRequestDto.getApproveStatus() == 1) {
+				if (user.get().getRole().getRoleId() == 1) {
+					if (claim.get().getClaimAmount() > 50000) {
+						claim.get().setClaimStatus(Constant.CLAIM_PENDING_STAGE_2);
+						claim.get().setApproverComments(approveClaimRequestDto.getApproverComment());
+						claimRepository.save(claim.get());
+						return Constant.SUCCESS;
+					} else {
+						claim.get().setClaimStatus(Constant.CLAIM_APPROVE);
+						claim.get().setApproverComments(approveClaimRequestDto.getApproverComment());
+						claimRepository.save(claim.get());
+						return Constant.SUCCESS;
+					}
+				} else {
+					claim.get().setClaimStatus(Constant.CLAIM_APPROVE);
+					claim.get().setApproverComments(approveClaimRequestDto.getApproverComment());
+					claimRepository.save(claim.get());
+					return Constant.SUCCESS;
+				}
+
+			} else if (approveClaimRequestDto.getApproveStatus() == 2) {
+				claim.get().setClaimStatus(Constant.CLAIM_DENY);
+				claim.get().setApproverComments(approveClaimRequestDto.getApproverComment());
+				claimRepository.save(claim.get());
+				return Constant.SUCCESS;
+
+			} else {
+				claim.get().setClaimStatus(Constant.CLAIM_REFER_BACK);
+				claim.get().setApproverComments(approveClaimRequestDto.getApproverComment());
+				claimRepository.save(claim.get());
+				return Constant.SUCCESS;
+
+			}
+		} else {
+			return "failed";
+		}
+
 	}
 
 }

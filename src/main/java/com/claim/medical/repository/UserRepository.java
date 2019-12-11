@@ -14,6 +14,8 @@ import com.claim.medical.entity.User;
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
+	
+	Optional<User> findByUserName(String userName);
 
 	Optional<User> findByUserNameAndPassword(String userName, String password);
 }

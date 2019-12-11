@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Hospital {
-	
+
 	@Id
 	private Integer hospitalId;
 	private String hospitalName;
